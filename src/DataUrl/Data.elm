@@ -33,8 +33,9 @@ type Data
 
 
 {-| Convert `Data` value to `String`.
-DataUrl.Data.toString <| Textual "foobarbaz"
---> "foobarbaz"
+
+    DataUrl.Data.toString <| Textual "foobarbaz"
+    --> "foobarbaz"
 
     DataUrl.Data.toString <| Base64 "foobarbaz"
     --> "foobarbaz"
