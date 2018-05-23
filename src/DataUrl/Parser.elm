@@ -29,12 +29,10 @@ dataUrl =
             DataUrl
                 { mediaType = mediaType
                 , data =
-                    (if isB64 then
-                        Base64
-                     else
-                        Textual
-                    )
-                        data
+                    if isB64 then
+                        Base64 data
+                    else
+                        Textual data
                 }
         )
         |. keyword "data:"

@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "analyse": "elm-analyse --elm-format-path=$(npm bin)/elm-format",
     "format": "elm-format src tests",
     "test": "elm-verify-examples && elm-test"
   },
@@ -7,5 +8,8 @@
     "elm-format": "^0.6.1-alpha",
     "elm-test": "^0.18.12",
     "elm-verify-examples": "^2.3.1"
+  },
+  "dependencies": {
+    "elm-analyse": "^0.14.2"
   }
 }

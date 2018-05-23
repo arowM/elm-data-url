@@ -44,8 +44,7 @@ module DataUrl
 
 import DataUrl.Data as Data
 import DataUrl.Internal exposing (DataUrl(..))
-import DataUrl.MediaType as MediaType
-import DataUrl.MediaType exposing (MediaType)
+import DataUrl.MediaType as MediaType exposing (MediaType)
 import DataUrl.Parser
 import Parser exposing (Parser)
 

@@ -8,10 +8,9 @@ module DataUrl.MediaType.Parser
         )
 
 import Char
-import DataUrl.MediaType.Internal as MediaType
-import DataUrl.MediaType.Internal exposing (MediaType(..))
+import DataUrl.MediaType.Internal as MediaType exposing (MediaType(..))
 import Parser exposing (..)
-import Regex
+import Regex exposing (Regex)
 
 
 mediaType : Parser MediaType
@@ -155,9 +154,12 @@ quotedPair =
 
 isChar : Char -> Bool
 isChar =
-    Regex.contains
-        (Regex.regex "[\\0-\\177]")
-        << String.fromChar
+    Regex.contains isCharRegex << String.fromChar
+
+
+isCharRegex : Regex
+isCharRegex =
+    Regex.regex "[\\0-\\177]"
 
 
 token : Parser String
