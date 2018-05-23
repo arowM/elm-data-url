@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "helpful summary of your project, less than 80 characters",
-    "repository": "https://github.com/user/project.git",
+    "summary": "A module to handle data URLs (IETF RFC 2397) in type safe manner.",
+    "repository": "https://github.com/arowM/elm-data-url.git",
     "license": "MIT",
     "source-directories": [
         "src"
