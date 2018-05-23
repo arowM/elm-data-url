@@ -2,6 +2,7 @@ module DataUrl.MediaType.Internal
     exposing
         ( MediaType(..)
         , init
+        , sampleMediaType
         )
 
 
@@ -18,3 +19,10 @@ init type_ parameters =
         { type_ = type_
         , parameters = parameters
         }
+
+
+sampleMediaType : MediaType
+sampleMediaType =
+    init
+        ( "text", "plain" )
+        [ ( "charset", "iso-8859-7" ) ]

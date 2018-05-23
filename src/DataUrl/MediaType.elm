@@ -17,15 +17,15 @@ The only way to get `MediaType` is using `DataUrl.mediaType`, which picks `Media
 @docs MediaType
 
 
+# Convert functions
+
+@docs toString
+
+
 # Getters
 
 @docs type_
 @docs parameters
-
-
-# Convert functions
-
-@docs toString
 
 -}
 
@@ -39,7 +39,13 @@ type alias MediaType =
 
 
 {-| Take pair of type and subtype from `MediaType` value.
-The type and subtype is guaranteed to meet `type-name` and `subtype-name` in [IETF RFC 6838](https://tools.ietf.org/html/rfc6838) respectively, which is not as strict as [IETF RFC 2397](https://tools.ietf.org/html/rfc2397) requires.
+The type and subtype is guaranteed to meet `type-name` and `subtype-name` in [IETF RFC 6838](https://tools.ietf.org/html/rfc6838) respectively, which is not as strict as [IETF RFC 2397](https://tools.ietf.org/html/rfc2397) requires, when created by `DataUrl.fromString`.
+
+    import DataUrl.MediaType.Internal exposing (sampleMediaType)
+
+    type_ sampleMediaType
+    --> ( "text", "plain" )
+
 -}
 type_ : MediaType -> ( String, String )
 type_ (MediaType o) =
@@ -47,14 +53,26 @@ type_ (MediaType o) =
 
 
 {-| Take list of key-value pair of parameters from `MediaType` value.
-The parameter key and value is guaranteed to meet `attribute` and `value` in [IETF RFC 2045](https://tools.ietf.org/html/rfc2045) respectively, as [IETF RFC 2397](https://tools.ietf.org/html/rfc2397) requires.
+The parameter key and value is guaranteed to meet `attribute` and `value` in [IETF RFC 2045](https://tools.ietf.org/html/rfc2045) respectively, as [IETF RFC 2397](https://tools.ietf.org/html/rfc2397) requires, when created by `DataUrl.fromString`.
+
+    import DataUrl.MediaType.Internal exposing (sampleMediaType)
+
+    parameters sampleMediaType
+    --> [ ( "charset", "iso-8859-7" ) ]
+
 -}
 parameters : MediaType -> List ( String, String )
 parameters (MediaType o) =
     o.parameters
 
 
-{-| Convert `MediaType` value to string representation such as `"text/plain;charset=iso-8859-7"`.
+{-| Convert `MediaType` value to string representation.
+
+    import DataUrl.MediaType.Internal exposing (sampleMediaType)
+
+    DataUrl.MediaType.toString sampleMediaType
+    --> "text/plain;charset=iso-8859-7"
+
 -}
 toString : MediaType -> String
 toString (MediaType o) =
