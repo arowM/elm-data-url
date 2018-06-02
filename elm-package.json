@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.0.1",
     "summary": "A module to handle data URLs (IETF RFC 2397) in type safe manner.",
     "repository": "https://github.com/arowM/elm-data-url.git",
     "license": "MIT",
