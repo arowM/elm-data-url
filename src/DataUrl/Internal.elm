@@ -1,8 +1,7 @@
-module DataUrl.Internal
-    exposing
-        ( DataUrl(..)
-        , init
-        )
+module DataUrl.Internal exposing
+    ( DataUrl(..)
+    , init
+    )
 
 import DataUrl.Data exposing (Data)
 import DataUrl.MediaType exposing (MediaType)

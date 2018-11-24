@@ -1,4 +1,4 @@
-module DataUrlSuite exposing (..)
+module DataUrlSuite exposing (attribute, data, dataUrl, digit, escaped, hexDigit, linearWhiteSpace, lower, mediaType, nonEmptyList, parameters, qtext, quotedPair, quotedString, reserved, restrictedMark, restrictedName, restrictedNameFirst, restrictedNameTail, suite, token, tokenMark, unreserved, unreservedMark, upper, uric, value)
 
 import Char
 import DataUrl
@@ -23,16 +23,17 @@ suite =
 dataUrl : Fuzzer String
 dataUrl =
     Fuzz.map3
-        (\isBase64 mmediaType data ->
+        (\isBase64 mmediaType data_ ->
             String.concat
                 [ "data:"
                 , Maybe.withDefault "" mmediaType
                 , if isBase64 then
                     ";base64"
+
                   else
                     ""
                 , ","
-                , data
+                , data_
                 ]
         )
         Fuzz.bool
@@ -102,7 +103,7 @@ restrictedMark =
 parameters : Fuzzer (List ( String, String ))
 parameters =
     Fuzz.list <|
-        Fuzz.map2 (,) attribute value
+        Fuzz.map2 Tuple.pair attribute value
 
 
 attribute : Fuzzer String
@@ -147,7 +148,7 @@ linearWhiteSpace =
     Fuzz.map String.concat <|
         Fuzz.list <|
             Fuzz.map2 (++)
-                (Fuzz.oneOf <| List.map Fuzz.constant [ "\x0D\n", "" ])
+                (Fuzz.oneOf <| List.map Fuzz.constant [ "\u{000D}\n", "" ])
                 (Fuzz.map (String.fromChar << Char.fromCode) <| Fuzz.oneOf <| List.map Fuzz.constant [ 32, 9 ])
 
 
@@ -178,7 +179,7 @@ tokenMark =
 
 data : Fuzzer String
 data =
-    Fuzz.map (String.concat) <| Fuzz.list uric
+    Fuzz.map String.concat <| Fuzz.list uric
 
 
 uric : Fuzzer String

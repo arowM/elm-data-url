@@ -1,42 +1,38 @@
-module DataUrl.MediaType.ParserSuite exposing (..)
+module DataUrl.MediaType.ParserSuite exposing (suite)
 
-import DataUrl.MediaType.Parser exposing (..)
 import DataUrl.MediaType.Internal exposing (MediaType(..))
+import DataUrl.MediaType.Parser exposing (..)
 import Fuzz exposing (Fuzzer, string)
 import Test exposing (..)
-import Utils exposing (isDelayed, shouldParse)
+import Utils exposing (shouldParse)
 
 
 suite : Test
 suite =
     describe "DataUrl.MediaType.Parser"
         [ describe "restrictedName"
-            [ fuzz string "is delayed" <|
-                isDelayed restrictedName
-            , test "cannot accept empty string" <|
+            [ test "cannot accept empty string" <|
                 \_ ->
                     shouldParse restrictedName "" <|
-                        Err 1
+                        Err ()
             , test "cannot contain `!`" <|
                 \_ ->
                     shouldParse restrictedName "!" <|
-                        Err 1
+                        Err ()
             , test "cannot contain `?`" <|
                 \_ ->
                     shouldParse restrictedName "1abc3-4?foobar" <|
                         Ok "1abc3-4"
             ]
         , describe "parameter"
-            [ fuzz string "is delayed" <|
-                isDelayed parameter
-            , test "have to contain '='" <|
+            [ test "have to contain '='" <|
                 \_ ->
                     shouldParse parameter "foobar" <|
-                        Err 1
+                        Err ()
             , test "cannot contain '@' in key" <|
                 \_ ->
                     shouldParse parameter "f@oo=bar" <|
-                        Err 1
+                        Err ()
             , test "should be parsed" <|
                 \_ ->
                     shouldParse parameter "foo=bar" <|
@@ -48,7 +44,7 @@ suite =
             , test "cannot use quoted string in key" <|
                 \_ ->
                     shouldParse parameter "\"foo\"=bar" <|
-                        Err 1
+                        Err ()
             , test "can use quoted pair in quoted value" <|
                 \_ ->
                     shouldParse parameter "foo=\"bar\\t\"" <|
@@ -63,29 +59,25 @@ suite =
                         Ok ( "foo", "bar" )
             ]
         , describe "core"
-            [ fuzz string "is delayed" <|
-                isDelayed restrictedName
-            , test "have to contain '/'" <|
+            [ test "have to contain '/'" <|
                 \_ ->
                     shouldParse core "foobar" <|
-                        Err 1
+                        Err ()
             , test "cannot contain '/' at the first" <|
                 \_ ->
                     shouldParse core "/foobar" <|
-                        Err 1
+                        Err ()
             , test "cannot contain '/' at the end" <|
                 \_ ->
                     shouldParse core "foobar/" <|
-                        Err 1
+                        Err ()
             , test "should be parsed" <|
                 \_ ->
                     shouldParse core "foo/bar" <|
                         Ok ( "foo", "bar" )
             ]
         , describe "mediaType"
-            [ fuzz string "is delayed" <|
-                isDelayed mediaType
-            , test "should be parsed" <|
+            [ test "should be parsed" <|
                 \_ ->
                     shouldParse mediaType "foo/bar;key=\"val\"extra" <|
                         Ok <|
@@ -125,19 +117,19 @@ suite =
             , test "cannot be parsed without type and subtype" <|
                 \_ ->
                     shouldParse mediaType ";key1=val1" <|
-                        Err 1
+                        Err ()
             , test "cannot be parsed without type" <|
                 \_ ->
                     shouldParse mediaType "/subtype;key1=val1" <|
-                        Err 1
+                        Err ()
             , test "cannot be parsed without subtype" <|
                 \_ ->
                     shouldParse mediaType "type/;key1=val1" <|
-                        Err 1
+                        Err ()
             , test "cannot be parsed without '/'" <|
                 \_ ->
                     shouldParse mediaType "typesubtype;key1=val1" <|
-                        Err 1
+                        Err ()
             , test "should be parsed till \";data\"" <|
                 \_ ->
                     shouldParse mediaType "foo/bar;data" <|
