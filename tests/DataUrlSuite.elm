@@ -23,7 +23,7 @@ suite =
 dataUrl : Fuzzer String
 dataUrl =
     Fuzz.map3
-        (\isBase64 mmediaType data ->
+        (\isBase64 mmediaType data_ ->
             String.concat
                 [ "data:"
                 , Maybe.withDefault "" mmediaType
@@ -32,7 +32,7 @@ dataUrl =
                   else
                     ""
                 , ","
-                , data
+                , data_
                 ]
         )
         Fuzz.bool
@@ -102,7 +102,7 @@ restrictedMark =
 parameters : Fuzzer (List ( String, String ))
 parameters =
     Fuzz.list <|
-        Fuzz.map2 (,) attribute value
+        Fuzz.map2 Tuple.pair attribute value
 
 
 attribute : Fuzzer String
@@ -147,7 +147,7 @@ linearWhiteSpace =
     Fuzz.map String.concat <|
         Fuzz.list <|
             Fuzz.map2 (++)
-                (Fuzz.oneOf <| List.map Fuzz.constant [ "\x0D\n", "" ])
+                (Fuzz.oneOf <| List.map Fuzz.constant [ "\u{000D}\n", "" ])
                 (Fuzz.map (String.fromChar << Char.fromCode) <| Fuzz.oneOf <| List.map Fuzz.constant [ 32, 9 ])
 
 

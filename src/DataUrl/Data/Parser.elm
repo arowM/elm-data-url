@@ -1,19 +1,18 @@
-module DataUrl.Data.Parser
-    exposing
-        ( data_
-        , reserved
-        , unreserved
-        , escaped
-        )
+module DataUrl.Data.Parser exposing
+    ( data_
+    , escaped
+    , reserved
+    , unreserved
+    )
 
 import Char
+import DataUrl.Helper exposing (zeroOrMore)
 import Parser exposing (..)
 
 
 data_ : Parser String
 data_ =
-    map String.concat <|
-        repeat zeroOrMore uric
+    zeroOrMore uric
 
 
 uric : Parser String
@@ -27,15 +26,16 @@ uric =
 
 reserved : Parser String
 reserved =
-    keep (Exactly 1) <|
-        \c ->
-            List.member c
-                [ ';', '/', '?', ':', '@', '&', '=', '+', '$', ',' ]
+    getChompedString <|
+        succeed ()
+            |. chompIf (\c -> List.member c [ ';', '/', '?', ':', '@', '&', '=', '+', '$', ',' ])
 
 
 unreserved : Parser String
 unreserved =
-    keep (Exactly 1) isUnreservedChar
+    getChompedString <|
+        succeed ()
+            |. chompIf isUnreservedChar
 
 
 isUnreservedChar : Char -> Bool
@@ -52,10 +52,8 @@ isUnreservedChar c =
 
 escaped : Parser String
 escaped =
-    delayedCommitMap
-        (\_ hex -> "%" ++ hex)
-        (symbol "%")
-    <|
-        delayedCommitMap (++)
-            (keep (Exactly 1) Char.isHexDigit)
-            (keep (Exactly 1) Char.isHexDigit)
+    getChompedString <|
+        succeed ()
+            |. backtrackable (chompIf (\c -> c == '%'))
+            |. backtrackable (chompIf Char.isHexDigit)
+            |. chompIf Char.isHexDigit

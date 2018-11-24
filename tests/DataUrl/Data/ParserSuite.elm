@@ -3,55 +3,49 @@ module DataUrl.Data.ParserSuite exposing (..)
 import DataUrl.Data.Parser exposing (..)
 import Fuzz exposing (Fuzzer, string)
 import Test exposing (..)
-import Utils exposing (isDelayed, shouldParse)
+import Utils exposing (shouldParse)
 
 
 suite : Test
 suite =
     describe "DataUrl.MediaType.Parser"
         [ describe "reserved"
-            [ fuzz string "is delayed" <|
-                isDelayed reserved
-            , test "cannot accept empty string" <|
+            [ test "cannot accept empty string" <|
                 \_ ->
                     shouldParse reserved "" <|
-                        Err 1
+                        Err ()
             , test "cannot contain `!`" <|
                 \_ ->
                     shouldParse reserved "!" <|
-                        Err 1
+                        Err ()
             , test "can contain `?`" <|
                 \_ ->
                     shouldParse reserved "??1a!" <|
                         Ok "?"
             ]
         , describe "unreserved"
-            [ fuzz string "is delayed" <|
-                isDelayed unreserved
-            , test "cannot accept empty string" <|
+            [ test "cannot accept empty string" <|
                 \_ ->
                     shouldParse unreserved "" <|
-                        Err 1
+                        Err ()
             , test "cannot contain '?'" <|
                 \_ ->
                     shouldParse unreserved "?" <|
-                        Err 1
+                        Err ()
             , test "can contain `!`" <|
                 \_ ->
                     shouldParse unreserved "!!1a?" <|
                         Ok "!"
             ]
         , describe "escaped"
-            [ fuzz string "is delayed" <|
-                isDelayed escaped
-            , test "have to contain two hexes" <|
+            [ test "have to contain two hexes" <|
                 \_ ->
                     shouldParse escaped "%3G" <|
-                        Err 1
+                        Err ()
             , test "have to begin with '%'" <|
                 \_ ->
                     shouldParse escaped "X1a" <|
-                        Err 1
+                        Err ()
             , test "can use lower alphabet" <|
                 \_ ->
                     shouldParse escaped "%af" <|
@@ -62,9 +56,7 @@ suite =
                         Ok "%AF"
             ]
         , describe "data_"
-            [ fuzz string "is delayed" <|
-                isDelayed data_
-            , test "can be empty string" <|
+            [ test "can be empty string" <|
                 \_ ->
                     shouldParse data_ "" <|
                         Ok ""

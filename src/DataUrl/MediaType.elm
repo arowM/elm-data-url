@@ -81,9 +81,9 @@ toString (MediaType o) =
 
 
 typeToString : ( String, String ) -> String
-typeToString ( type_, subtype ) =
+typeToString ( mainType, subtype ) =
     String.concat
-        [ type_
+        [ mainType
         , "/"
         , subtype
         ]

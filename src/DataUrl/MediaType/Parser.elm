@@ -1,30 +1,30 @@
-module DataUrl.MediaType.Parser
-    exposing
-        ( mediaType
-        , core
-        , parameters
-        , parameter
-        , restrictedName
-        )
+module DataUrl.MediaType.Parser exposing
+    ( core
+    , mediaType
+    , parameter
+    , parameters
+    , restrictedName
+    )
 
 import Char
+import DataUrl.Helper exposing (oneOrMore, zeroOrMore)
 import DataUrl.MediaType.Internal as MediaType exposing (MediaType(..))
 import Parser exposing (..)
-import Regex exposing (Regex)
 
 
 mediaType : Parser MediaType
 mediaType =
-    delayedCommitMap MediaType.init
-        core
-        parameters
+    succeed MediaType.init
+        |= backtrackable core
+        |= parameters
 
 
 core : Parser ( String, String )
 core =
-    delayedCommitMap (,)
-        coreType
-        (delayedCommit (symbol "/") coreSubtype)
+    succeed Tuple.pair
+        |= backtrackable coreType
+        |. backtrackable (symbol "/")
+        |= coreSubtype
 
 
 coreType : Parser String
@@ -39,17 +39,10 @@ coreSubtype =
 
 restrictedName : Parser String
 restrictedName =
-    delayedCommitMap (++)
-        (keep (Exactly 1) isRestrictedNameFirst)
-        (keep zeroOrMore isRestrictedNameChars
-            |> andThen
-                (\str ->
-                    if String.length str > 126 then
-                        fail "Too long restricted name of MIME type."
-                    else
-                        succeed str
-                )
-        )
+    getChompedString <|
+        succeed ()
+            |. backtrackable (chompIf isRestrictedNameFirst)
+            |. chompWhile isRestrictedNameChars
 
 
 isRestrictedNameFirst : Char -> Bool
@@ -67,22 +60,28 @@ isRestrictedNameChars c =
         [ Char.isUpper
         , Char.isLower
         , Char.isDigit
-        , flip List.member
+        , \x -> List.member x
             [ '!', '#', '$', '&', '-', '^', '_', '.', '+' ]
         ]
 
 
 parameters : Parser (List ( String, String ))
 parameters =
-    repeat zeroOrMore
-        (delayedCommit (symbol ";") parameter)
+    oneOf
+        [ succeed (::)
+            |. backtrackable (symbol ";")
+            |= parameter
+            |= lazy (\_ -> parameters)
+        , succeed []
+        ]
 
 
 parameter : Parser ( String, String )
 parameter =
-    delayedCommitMap (,)
-        parameterAttribute
-        (delayedCommit (symbol "=") parameterValue)
+    succeed Tuple.pair
+        |= backtrackable parameterAttribute
+        |. backtrackable (symbol "=")
+        |= parameterValue
 
 
 parameterAttribute : Parser String
@@ -100,71 +99,78 @@ parameterValue =
 
 quotedString : Parser String
 quotedString =
-    delayedCommit (succeed ()) <|
-        succeed (\strs -> "\"" ++ String.concat strs ++ "\"")
-            |. symbol "\""
-            |= repeat zeroOrMore
-                (oneOf
-                    [ qtext
-                    , linearWhiteSpace
-                    , quotedPair
-                    ]
-                )
-            |. symbol "\""
+    succeed (\str -> "\"" ++ str ++ "\"")
+        |. backtrackable (symbol "\"")
+        |= backtrackable quotedStringBody
+        |. symbol "\""
+
+
+quotedStringBody : Parser String
+quotedStringBody =
+    oneOf
+        [ zeroOrMore <|
+            oneOf
+                [ qtext
+                , linearWhiteSpace
+                , quotedPair
+                ]
+        , succeed ""
+        ]
 
 
 qtext : Parser String
 qtext =
-    keep (Exactly 1)
-        (Regex.contains
-            (Regex.regex "[\\0-\\14\\16-\\41\\43-\\133\\135-\\177]")
-            << String.fromChar
-        )
+    getChompedString <|
+        succeed ()
+            |. chompIf
+                (\c ->
+                    List.member (Char.toCode c) <|
+                        List.range 0 12
+                            ++ List.range 14 33
+                            ++ List.range 35 91
+                            ++ List.range 93 127
+                )
 
 
 linearWhiteSpace : Parser String
 linearWhiteSpace =
-    map String.concat <|
-        repeat oneOrMore
-            (delayedCommitMap (++)
+    oneOrMore <|
+        succeed (++)
+            |= backtrackable
                 (oneOf
-                    [ keyword_ "\x0D\n"
+                    [ map (\_ -> "\u{000D}\n") <| Parser.token "\u{000D}\n"
                     , succeed ""
                     ]
                 )
-                lwspChar
-            )
+            |= lwspChar
 
 
 lwspChar : Parser String
 lwspChar =
-    keep (Exactly 1)
-        (Regex.contains
-            (Regex.regex "(\\40|\\11)")
-            << String.fromChar
-        )
+    getChompedString <|
+        succeed ()
+            |. chompIf (Char.toCode >> (\n -> n == 32 || n == 9))
 
 
 quotedPair : Parser String
 quotedPair =
-    delayedCommitMap (++)
-        (symbol_ "\\")
-        (keep (Exactly 1) isChar)
+    getChompedString <|
+        succeed ()
+            |. backtrackable (chompIf (\c -> c == '\\'))
+            |. chompIf isChar
 
 
 isChar : Char -> Bool
 isChar =
-    Regex.contains isCharRegex << String.fromChar
-
-
-isCharRegex : Regex
-isCharRegex =
-    Regex.regex "[\\0-\\177]"
+    Char.toCode >> \n -> 0 <= n && n <= 127
 
 
 token : Parser String
 token =
-    keep oneOrMore isTokenChar
+    getChompedString <|
+        succeed ()
+            |. backtrackable (chompIf isTokenChar)
+            |. chompWhile isTokenChar
 
 
 isTokenChar : Char -> Bool
@@ -177,13 +183,3 @@ isTokenChar c =
             List.member c
                 [ '!', '#', '$', '%', '&', '\'', '*', '+', '-', '.', '^', '_', '`', '{', '|', '}', '~' ]
         ]
-
-
-keyword_ : String -> Parser String
-keyword_ str =
-    map (\_ -> str) <| keyword str
-
-
-symbol_ : String -> Parser String
-symbol_ str =
-    map (\_ -> str) <| symbol str

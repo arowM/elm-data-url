@@ -98,8 +98,8 @@ As [data URLs page of MDN](https://developer.mozilla.org/docs/Web/HTTP/Basics_of
 it should be assumed that `text/plain;charset=US-ASCII` is set when the value is `Nothing`.
 -}
 mediaType : DataUrl -> Maybe MediaType
-mediaType (DataUrl { mediaType }) =
-    mediaType
+mediaType (DataUrl o) =
+    o.mediaType
 
 
 {-| Take data part from `DataUrl`.
@@ -114,8 +114,8 @@ The `someString` is only guaranteed to meet `uric` of [RFC 2396](https://tools.i
 
 -}
 data : DataUrl -> Data
-data (DataUrl { data }) =
-    data
+data (DataUrl o) =
+    o.data
 
 
 

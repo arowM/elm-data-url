@@ -82,7 +82,7 @@ suite =
             , test "cannot contain raw html" <|
                 \_ ->
                     shouldParse dataUrl "data:text/html,<script>alert('hi');</script>" <|
-                        Err 16
+                        Err ()
             , test "can contain \"base64\" in media type parameters of base64 encoded data" <|
                 \_ ->
                     shouldParse dataUrl "data:text/html;base64=foo;base64,SGVsbG8sIFdvcmxkIQ%3D%3D" <|
@@ -107,14 +107,14 @@ suite =
             , test "cannot ommit trailing ',' after media type" <|
                 \_ ->
                     shouldParse dataUrl "data:text/html" <|
-                        Err 15
+                        Err ()
             , test "cannot ommit trailing ',' after \";base64\"" <|
                 \_ ->
                     shouldParse dataUrl "data:text/html;base64" <|
-                        Err 22
+                        Err ()
             , test "cannot contain invlid string in `;base64` part" <|
                 \_ ->
                     shouldParse dataUrl "data:text/html;base64x," <|
-                        Err 22
+                        Err ()
             ]
         ]
