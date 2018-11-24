@@ -1,9 +1,8 @@
-module DataUrl.Data
-    exposing
-        ( Data(..)
-        , toString
-        , isBase64
-        )
+module DataUrl.Data exposing
+    ( Data(..)
+    , toString
+    , isBase64
+    )
 
 {-| A module for `data` part of [data URLs](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
 
@@ -62,6 +61,7 @@ toString data =
 
     isBase64 (Textual "any string")
     --> False
+
 -}
 isBase64 : Data -> Bool
 isBase64 data =

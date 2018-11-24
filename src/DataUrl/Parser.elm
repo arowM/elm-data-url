@@ -1,9 +1,8 @@
-module DataUrl.Parser
-    exposing
-        ( dataUrl
-        , isBase64
-        , maybe
-        )
+module DataUrl.Parser exposing
+    ( dataUrl
+    , isBase64
+    , maybe
+    )
 
 import DataUrl.Data exposing (Data(..))
 import DataUrl.Data.Parser as Data
@@ -22,6 +21,7 @@ import Parser exposing (..)
 
     fesult.mapError (\_ -> ()) <| run dataUrl "data:text/html;base64xxx"
     --> Err ()
+
 -}
 dataUrl : Parser DataUrl
 dataUrl =
@@ -32,11 +32,13 @@ dataUrl =
                 , data =
                     if isB64 then
                         Base64 data
+
                     else
                         Textual data
                 }
         )
-        |. token "data:" |= maybe MediaType.mediaType
+        |. token "data:"
+        |= maybe MediaType.mediaType
         |= isBase64
         |. symbol ","
         |= Data.data_

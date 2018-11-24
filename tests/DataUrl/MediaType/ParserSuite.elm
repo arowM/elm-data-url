@@ -1,7 +1,7 @@
-module DataUrl.MediaType.ParserSuite exposing (..)
+module DataUrl.MediaType.ParserSuite exposing (suite)
 
-import DataUrl.MediaType.Parser exposing (..)
 import DataUrl.MediaType.Internal exposing (MediaType(..))
+import DataUrl.MediaType.Parser exposing (..)
 import Fuzz exposing (Fuzzer, string)
 import Test exposing (..)
 import Utils exposing (shouldParse)

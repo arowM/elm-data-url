@@ -1,14 +1,13 @@
-module DataUrl
-    exposing
-        ( DataUrl
-        , Data
-        , MediaType
-        , fromString
-        , toString
-        , mediaType
-        , data
-        , parser
-        )
+module DataUrl exposing
+    ( DataUrl
+    , Data
+    , MediaType
+    , fromString
+    , mediaType
+    , data
+    , toString
+    , parser
+    )
 
 {-| A module to handle [data URLs](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) ([IETF RFC 2397](https://tools.ietf.org/html/rfc2397)) in type safe manner.
 The data URL string is supposed to be provided through `port`s.
@@ -48,6 +47,7 @@ import DataUrl.Internal exposing (DataUrl(..))
 import DataUrl.MediaType as MediaType exposing (MediaType)
 import DataUrl.Parser
 import Parser exposing (Parser)
+
 
 
 -- Types
@@ -137,6 +137,7 @@ toString (DataUrl o) =
             , Maybe.map MediaType.toString o.mediaType
             , if Data.isBase64 o.data then
                 Just ";base64"
+
               else
                 Nothing
             , Just ","

@@ -1,4 +1,4 @@
-module Utils exposing (..)
+module Utils exposing (cannotBeErr, shouldParse)
 
 import Expect exposing (Expectation)
 import Parser exposing (..)

@@ -1,4 +1,4 @@
-module DataUrlSuite exposing (..)
+module DataUrlSuite exposing (attribute, data, dataUrl, digit, escaped, hexDigit, linearWhiteSpace, lower, mediaType, nonEmptyList, parameters, qtext, quotedPair, quotedString, reserved, restrictedMark, restrictedName, restrictedNameFirst, restrictedNameTail, suite, token, tokenMark, unreserved, unreservedMark, upper, uric, value)
 
 import Char
 import DataUrl
@@ -29,6 +29,7 @@ dataUrl =
                 , Maybe.withDefault "" mmediaType
                 , if isBase64 then
                     ";base64"
+
                   else
                     ""
                 , ","
@@ -178,7 +179,7 @@ tokenMark =
 
 data : Fuzzer String
 data =
-    Fuzz.map (String.concat) <| Fuzz.list uric
+    Fuzz.map String.concat <| Fuzz.list uric
 
 
 uric : Fuzzer String

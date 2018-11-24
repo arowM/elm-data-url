@@ -1,4 +1,4 @@
-module DataUrl.ParserSuite exposing (..)
+module DataUrl.ParserSuite exposing (suite)
 
 import DataUrl.Data exposing (Data(..))
 import DataUrl.Internal as DataUrl

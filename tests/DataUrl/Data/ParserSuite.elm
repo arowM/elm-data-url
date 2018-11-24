@@ -1,4 +1,4 @@
-module DataUrl.Data.ParserSuite exposing (..)
+module DataUrl.Data.ParserSuite exposing (suite)
 
 import DataUrl.Data.Parser exposing (..)
 import Fuzz exposing (Fuzzer, string)

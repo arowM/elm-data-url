@@ -1,9 +1,8 @@
-module DataUrl.MediaType.Internal
-    exposing
-        ( MediaType(..)
-        , init
-        , sampleMediaType
-        )
+module DataUrl.MediaType.Internal exposing
+    ( MediaType(..)
+    , init
+    , sampleMediaType
+    )
 
 
 type MediaType

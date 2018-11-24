@@ -60,8 +60,9 @@ isRestrictedNameChars c =
         [ Char.isUpper
         , Char.isLower
         , Char.isDigit
-        , \x -> List.member x
-            [ '!', '#', '$', '&', '-', '^', '_', '.', '+' ]
+        , \x ->
+            List.member x
+                [ '!', '#', '$', '&', '-', '^', '_', '.', '+' ]
         ]
 
 
@@ -162,7 +163,7 @@ quotedPair =
 
 isChar : Char -> Bool
 isChar =
-    Char.toCode >> \n -> 0 <= n && n <= 127
+    Char.toCode >> (\n -> 0 <= n && n <= 127)
 
 
 token : Parser String

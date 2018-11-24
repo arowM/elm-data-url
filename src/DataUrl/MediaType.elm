@@ -1,10 +1,9 @@
-module DataUrl.MediaType
-    exposing
-        ( MediaType
-        , type_
-        , parameters
-        , toString
-        )
+module DataUrl.MediaType exposing
+    ( MediaType
+    , toString
+    , type_
+    , parameters
+    )
 
 {-| A module to handle media types of [data URLs](https://developer.mozilla.org/docs/Web/HTTP/Basics_of_HTTP/Data_URIs) ([IETF RFC 2397](https://tools.ietf.org/html/rfc2397)) in type safe manner.
 
