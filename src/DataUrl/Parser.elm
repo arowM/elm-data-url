@@ -1,5 +1,6 @@
 module DataUrl.Parser exposing
     ( dataUrl
+    , dataUrlFuzzy
     , isBase64
     , maybe
     )
@@ -42,6 +43,40 @@ dataUrl =
         |= isBase64
         |. symbol ","
         |= Data.data_
+        |. end
+
+
+{-|
+
+    Result.mapError (\_ -> ()) <| run dataUrlFuzzy "data:text/html"
+    --> Err ()
+
+    Result.mapError (\_ -> ()) <| run dataUrlFuzzy "data:text/html;base64"
+    --> Err ()
+
+    fesult.mapError (\_ -> ()) <| run dataUrlFuzzy "data:text/html;base64xxx"
+    --> Err ()
+
+-}
+dataUrlFuzzy : Parser DataUrl
+dataUrlFuzzy =
+    succeed
+        (\mediaType isB64 data ->
+            DataUrl
+                { mediaType = mediaType
+                , data =
+                    if isB64 then
+                        Base64 data
+
+                    else
+                        Textual data
+                }
+        )
+        |. token "data:"
+        |= maybe MediaType.mediaType
+        |= isBase64
+        |. symbol ","
+        |= Data.fuzzy
         |. end
 
 

@@ -15,9 +15,17 @@ oneOrMore p =
 
 zeroOrMore : Parser String -> Parser String
 zeroOrMore p =
+    loop [] (zeroOrMoreP p)
+
+
+zeroOrMoreP : Parser String -> List String -> Parser (Step (List String) String)
+zeroOrMoreP p revStr =
     oneOf
-        [ succeed (++)
-            |= backtrackable p
-            |= lazy (\_ -> zeroOrMore p)
-        , succeed ""
+        [ map
+            (\str ->
+                Loop (str :: revStr)
+            )
+            (backtrackable p)
+        , succeed ()
+            |> map (\_ -> Done (String.concat <| List.reverse revStr))
         ]

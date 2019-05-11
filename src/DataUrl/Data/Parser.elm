@@ -1,6 +1,7 @@
 module DataUrl.Data.Parser exposing
     ( data_
     , escaped
+    , fuzzy
     , reserved
     , unreserved
     )
@@ -10,12 +11,26 @@ import DataUrl.Helper exposing (zeroOrMore)
 import Parser exposing (..)
 
 
+fuzzy : Parser String
+fuzzy =
+    getChompedString <| chompWhile (always True)
+
+
 data_ : Parser String
 data_ =
-    zeroOrMore uric
+    getChompedString <| loop () dataP
 
 
-uric : Parser String
+dataP : () -> Parser (Step () ())
+dataP _ =
+    oneOf
+        -- [ map Loop <| backtrackable uric
+        [ map Loop uric
+        , succeed (Done ())
+        ]
+
+
+uric : Parser ()
 uric =
     oneOf
         [ reserved
@@ -24,18 +39,16 @@ uric =
         ]
 
 
-reserved : Parser String
+reserved : Parser ()
 reserved =
-    getChompedString <|
-        succeed ()
-            |. chompIf (\c -> List.member c [ ';', '/', '?', ':', '@', '&', '=', '+', '$', ',' ])
+    succeed ()
+        |. chompIf (\c -> List.member c [ ';', '/', '?', ':', '@', '&', '=', '+', '$', ',' ])
 
 
-unreserved : Parser String
+unreserved : Parser ()
 unreserved =
-    getChompedString <|
-        succeed ()
-            |. chompIf isUnreservedChar
+    succeed ()
+        |. chompIf isUnreservedChar
 
 
 isUnreservedChar : Char -> Bool
@@ -50,10 +63,9 @@ isUnreservedChar c =
         ]
 
 
-escaped : Parser String
+escaped : Parser ()
 escaped =
-    getChompedString <|
-        succeed ()
-            |. backtrackable (chompIf (\c -> c == '%'))
-            |. backtrackable (chompIf Char.isHexDigit)
-            |. chompIf Char.isHexDigit
+    succeed ()
+        |. backtrackable (chompIf (\c -> c == '%'))
+        |. backtrackable (chompIf Char.isHexDigit)
+        |. chompIf Char.isHexDigit

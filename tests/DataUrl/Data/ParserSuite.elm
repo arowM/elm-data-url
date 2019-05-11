@@ -1,7 +1,9 @@
 module DataUrl.Data.ParserSuite exposing (suite)
 
 import DataUrl.Data.Parser exposing (..)
+import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, string)
+import Parser exposing (Parser, getChompedString)
 import Test exposing (..)
 import Utils exposing (shouldParse)
 
@@ -12,47 +14,47 @@ suite =
         [ describe "reserved"
             [ test "cannot accept empty string" <|
                 \_ ->
-                    shouldParse reserved "" <|
+                    shouldChomp reserved "" <|
                         Err ()
             , test "cannot contain `!`" <|
                 \_ ->
-                    shouldParse reserved "!" <|
+                    shouldChomp reserved "!" <|
                         Err ()
             , test "can contain `?`" <|
                 \_ ->
-                    shouldParse reserved "??1a!" <|
+                    shouldChomp reserved "??1a!" <|
                         Ok "?"
             ]
         , describe "unreserved"
             [ test "cannot accept empty string" <|
                 \_ ->
-                    shouldParse unreserved "" <|
+                    shouldChomp unreserved "" <|
                         Err ()
             , test "cannot contain '?'" <|
                 \_ ->
-                    shouldParse unreserved "?" <|
+                    shouldChomp unreserved "?" <|
                         Err ()
             , test "can contain `!`" <|
                 \_ ->
-                    shouldParse unreserved "!!1a?" <|
+                    shouldChomp unreserved "!!1a?" <|
                         Ok "!"
             ]
         , describe "escaped"
             [ test "have to contain two hexes" <|
                 \_ ->
-                    shouldParse escaped "%3G" <|
+                    shouldChomp escaped "%3G" <|
                         Err ()
             , test "have to begin with '%'" <|
                 \_ ->
-                    shouldParse escaped "X1a" <|
+                    shouldChomp escaped "X1a" <|
                         Err ()
             , test "can use lower alphabet" <|
                 \_ ->
-                    shouldParse escaped "%af" <|
+                    shouldChomp escaped "%af" <|
                         Ok "%af"
             , test "can use upper alphabet" <|
                 \_ ->
-                    shouldParse escaped "%AF" <|
+                    shouldChomp escaped "%AF" <|
                         Ok "%AF"
             ]
         , describe "data_"
@@ -78,3 +80,8 @@ suite =
                         Ok "%1f%aB!-_%B0?;/:x"
             ]
         ]
+
+
+shouldChomp : Parser () -> String -> Result () String -> Expectation
+shouldChomp p =
+    shouldParse (getChompedString p)
