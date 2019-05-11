@@ -3,7 +3,7 @@
     "name": "arowM/elm-data-url",
     "summary": "A module to handle data URLs (IETF RFC 2397) in type safe manner.",
     "license": "MIT",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "exposed-modules": [
         "DataUrl",
         "DataUrl.Data",
