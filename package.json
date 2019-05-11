@@ -2,11 +2,11 @@
   "scripts": {
     "analyse": "elm-analyse --elm-format-path=$(npm bin)/elm-format",
     "format": "elm-format src tests",
-    "test": "elm-verify-examples && elm-test"
+    "test": "elm-analyse && elm-format --validate src tests && elm make --docs=/tmp/docs.json && elm-verify-examples && elm-test"
   },
   "dependencies": {
     "elm": "^0.19.0-bugfix2",
-    "elm-analyse": "^0.15.0",
+    "elm-analyse": "^0.16.0",
     "elm-format": "^0.8.1",
     "elm-test": "^0.19.0-rev3",
     "elm-verify-examples": "^3.0.1"

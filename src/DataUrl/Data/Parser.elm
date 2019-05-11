@@ -7,7 +7,6 @@ module DataUrl.Data.Parser exposing
     )
 
 import Char
-import DataUrl.Helper exposing (zeroOrMore)
 import Parser exposing (..)
 
 
